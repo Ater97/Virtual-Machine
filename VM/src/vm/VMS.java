@@ -22,7 +22,7 @@ public class VMS {
     Utilities U = new Utilities();
     ArrayList<String> MainList = new ArrayList<>();
     Stack<String> MainStack = new Stack<>();
-    
+    int operationLabel = 0;
     public void Read(File originalFile) throws IOException
     {
         try (Scanner scanner = new Scanner(originalFile)) {
@@ -52,28 +52,99 @@ public class VMS {
         switch(originalLine) 
         {
             case "add":
-                break;
+                return "@SP\n"
+                        + "AM=M-1\n" 
+                        + "D=M\n" 
+                        + "A=A-1\n" 
+                        + "M=D+M\n";
             case "sub":
-                break;
+                return "@SP\n"
+                        + "AM=M-1\n" 
+                        + "D=M\n" 
+                        + "A=A-1\n"
+                        + "M=M-D\n";
             case "neg":
-                break;
+                return "@SP\n"
+                        + "AM=M-1\n" 
+                        + "M=-M\n";
             case "eq":
-                break;
+                operationLabel++;
+                return "@SP\n"
+                        + "AM=M-1\n"
+                        + "D=M\n"
+                        + "A=A-1\n"
+                        + "D=M-D\n"
+                        
+                        + "@true"+ operationLabel +"\n"
+                        + "D;JEQ\n"
+                        //false
+                        + "@SP\n"
+                        + "A=M-1\n"
+                        + "M=0\n"
+                        + "@finish"+ operationLabel +"\n"
+                        + "0;JMP\n"
+                        //true
+                        + "(true"+ operationLabel +")\n"
+                        + "@SP\n"
+                        + "A=M-1\n"
+                        + "M=-1\n"
+                        + "(finish"+ operationLabel +")\n";
+                
             case "gt":
-                break;
+                return "@SP\n"
+                        + "AM=M-1\n"
+                        + "D=M\n"
+                        + "A=A-1\n"
+                        + "D=M-D\n"
+                        + "@true"+ operationLabel +"\n"
+                        + "D;JGT\n"
+                        + "@SP\n"
+                        + "A=M-1\n"
+                        + "M=0\n"
+                        + "@finish"+ operationLabel +"\n"
+                        + "0;JMP\n"
+                        + "(true"+ operationLabel +")\n"
+                        + "@SP\n"
+                        + "A=M-1\n"
+                        + "M=-1\n"
+                        + "(finish"+ operationLabel +")\n";
             case "lt":
-                break;
+                return "@SP\n"
+                        + "AM=M-1\n"
+                        + "D=M\n"
+                        + "A=A-1\n"
+                        + "D=M-D\n"
+                        + "@true"+ operationLabel +"\n"
+                        + "D;JLT\n"
+                        + "@SP\n"
+                        + "A=M-1\n"
+                        + "M=0\n"
+                        + "@finish"+ operationLabel +"\n"
+                        + "0;JMP\n"
+                        + "(true"+ operationLabel +")\n"
+                        + "@SP\n"
+                        + "A=M-1\n"
+                        + "M=-1\n"
+                        + "(finish"+ operationLabel +")\n";
             case "and":
-                break;
+                return "@SP\n"
+                        + "AM=M-1\n" 
+                        + "D=M\n" 
+                        + "A=A-1\n"
+                        + "M=D&M\n";
             case "or":
-                break;
+                return "@SP\n"
+                        + "AM=M-1\n" 
+                        + "D=M\n" 
+                        + "A=A-1\n"
+                        + "M=D|M\n";
             case "not":
-                break;
+                return "@SP\n"
+                        + "AM=M-1\n" 
+                        + "M=!M";
             default: 
                 return AccesCommands(originalLine);
         }
-        
-        return " ";
     }
     
     public String AccesCommands(String originalLine)
@@ -113,7 +184,14 @@ public class VMS {
             case "static":
                 break;
             case "constant":
-                break;
+                return "@" + parts[2].trim()
+                        + "\nD=A\n"
+                        + "@SP\n" 
+                        + "A=M\n" 
+                        + "M=D\n" 
+                        + "@SP\n" 
+                        + "M=M+1\n";
+
             case "this":
                 break;
             case "that":
