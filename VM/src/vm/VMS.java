@@ -21,7 +21,6 @@ import java.util.Stack;
 public class VMS {
     Utilities U = new Utilities();
     ArrayList<String> MainList = new ArrayList<>();
-    Stack<String> MainStack = new Stack<>();
     int operationLabel = 0;
     public void Read(File originalFile) throws IOException
     {
@@ -65,7 +64,7 @@ public class VMS {
                         + "M=M-D\n";
             case "neg":
                 return "@SP\n"
-                        + "AM=M-1\n" 
+                        + "A=M-1\n" 
                         + "M=-M\n";
             case "eq":
                 operationLabel++;
@@ -91,6 +90,7 @@ public class VMS {
                         + "(finish"+ operationLabel +")\n";
                 
             case "gt":
+                operationLabel++;
                 return "@SP\n"
                         + "AM=M-1\n"
                         + "D=M\n"
@@ -109,6 +109,7 @@ public class VMS {
                         + "M=-1\n"
                         + "(finish"+ operationLabel +")\n";
             case "lt":
+                operationLabel++;
                 return "@SP\n"
                         + "AM=M-1\n"
                         + "D=M\n"
@@ -131,17 +132,17 @@ public class VMS {
                         + "AM=M-1\n" 
                         + "D=M\n" 
                         + "A=A-1\n"
-                        + "M=D&M\n";
+                        + "M=M&D\n";
             case "or":
                 return "@SP\n"
                         + "AM=M-1\n" 
                         + "D=M\n" 
                         + "A=A-1\n"
-                        + "M=D|M\n";
+                        + "M=M|D\n";
             case "not":
                 return "@SP\n"
-                        + "AM=M-1\n" 
-                        + "M=!M";
+                        + "A=M-1\n" 
+                        + "M=!M\n";
             default: 
                 return AccesCommands(originalLine);
         }
@@ -156,18 +157,18 @@ public class VMS {
                 return PushMemorySegments(originalLine);
             case "pop":
                 return PopMemorySegments(originalLine);
+            //Program flow commands -> function, call, return
+            case "function":
+                break;
+            case "call":
+                break;
             //Additionals commands -> label, goto, if-goto
             case "label":
                 break;
             case "goto":
                 break;
             case "if-goto":
-                break;
-            //Program flow commands -> function, call, return
-            case "function":
-                break;
-            case "call":
-                break;
+                break;  
             case "return":
                 break;
         }
@@ -177,12 +178,31 @@ public class VMS {
     {   String[] parts = originalLine.split(" ");
         switch(parts[1])//Memory Segments -> argument, local, static, constant, this-that, pointer, temp  
         {
-            case "argument":
-                break;
+            case "argument": //Push the value of segment[index] onto the stack.
+                return "@ARG\n"
+                        + "D=M\n"
+                        + "@" + parts[2].trim()
+                        + "\nA=D+A\n"
+                        + "D=M\n"
+                        
+                        + "@SP\n"
+                        + "A=M\n"
+                        + "M=D\n"
+                        + "@SP\n"
+                        + "M=M+1"; 
             case "local":
-                break;
+                return "@LCL\n"
+                        + "D=M\n"
+                        + "@" + parts[2].trim()
+                        + "\nA=D+A\n"
+                        + "D=M\n"
+                        + "@SP\n"
+                        + "A=M\n"
+                        + "M=D\n"
+                        + "@SP\n"
+                        + "M=M+1\n";
             case "static":
-                break;
+                return "@"+"\n";
             case "constant":
                 return "@" + parts[2].trim()
                         + "\nD=A\n"
@@ -193,13 +213,56 @@ public class VMS {
                         + "M=M+1\n";
 
             case "this":
-                break;
+                return "@THIS\n"
+                        + "D=M\n"
+                        + "@" + parts[2].trim()
+                        + "\nA=D+A\n"
+                        + "D=M\n"
+                        + "@SP\n"
+                        + "A=M\n"
+                        + "M=D\n"
+                        + "@SP\n"
+                        + "M=M+1\n";
             case "that":
-                break;
+                return "@THAT\n"
+                        + "D=M\n"
+                        + "@" + parts[2].trim()
+                        + "\nA=D+A\n"
+                        + "D=M\n"
+                        + "@SP\n"
+                        + "A=M\n"
+                        + "M=D\n"
+                        + "@SP\n"
+                        + "M=M+1\n";
             case "pointer":
-                break;
+                if("0"==parts[2].trim())
+                {
+                    return "@THIS\n"
+                            + "D=M\n"
+                            + "@SP\n"
+                            + "A=M\n"
+                            + "M=D\n"
+                            + "@SP\n"
+                            + "M=M+1";
+                }
+                return "@THAT\n"
+                        + "D=M\n"
+                        + "@SP\n"
+                        + "A=M\n"
+                        + "M=D\n"
+                        + "@SP\n"
+                        + "M=M+1";
             case "temp":
-                break;
+                return "@R5\n"
+                        + "D=A\n"
+                        + "@" + parts[2].trim() +"\n"
+                        + "A=D+A\n"
+                        + "D=M\n"
+                        + "@SP\n"
+                        + "A=M\n"
+                        + "M=D\n"
+                        + "@SP\n"
+                        + "M=M+1";
             default:
                 break;
         }
@@ -209,22 +272,106 @@ public class VMS {
     {   String[] parts = originalLine.split(" ");
         switch(parts[1])//Memory Segments -> argument, local, static, constant, this-that, pointer, temp  
         {
-            case "argument":
-                break;
-            case "local":
-                break;
+            case "argument": 
+                return "@ARG\n"
+                        + "D=M\n" 
+                        + "@" + parts[2].trim()+"\n"
+                        + "D=D+A\n" 
+                        + "@R13\n"
+                        + "M=D\n"
+                        + "@SP\n"
+                        + "AM=M-1\n"
+                        + "D=M\n"
+                        + "@13\n"
+                        + "A=M\n"
+                        + "M=D\n";
+                        
+            case "local"://pop segment index Pop the top stack value 
+                return "@LCL\n"
+                        + "D=M\n" 
+                        + "@" + parts[2].trim()+"\n"
+                        + "D=D+A\n"
+                        //and store it in segment[index].
+                        + "@R13\n"
+                        + "M=D\n"
+                        + "@SP\n"
+                        + "AM=M-1\n"
+                        + "D=M\n"
+                        + "@13\n"
+                        + "A=M\n"
+                        + "M=D\n";
             case "static":
                 break;
             case "constant":
                 break;
             case "this":
-                break;
+                return "@THIS\n"
+                        + "D=M\n" 
+                        + "@" + parts[2].trim()+"\n"
+                        + "D=D+A\n" 
+                        + "@R13\n"
+                        + "M=D\n"
+                        + "@SP\n"
+                        + "AM=M-1\n"
+                        + "D=M\n"
+                        + "@13\n"
+                        + "A=M\n"
+                        + "M=D\n";
+                        
             case "that":
-                break;
+                 return "@THAT\n"
+                        + "D=M\n" 
+                        + "@" + parts[2].trim()+"\n"
+                        + "D=D+A\n" 
+                        + "@R13\n"
+                        + "M=D\n"
+                        + "@SP\n"
+                        + "AM=M-1\n"
+                        + "D=M\n"
+                        + "@13\n"
+                        + "A=M\n"
+                        + "M=D\n";
+                        
             case "pointer":
-                break;
+                if("0"==parts[2].trim())
+                {
+                    return "@THIS\n"
+                            + "D=A\n"
+                            
+                            + "@R13\n"
+                            + "M=D\n"
+                            + "@SP\n"
+                            + "AM=M-1\n"
+                            + "D=M\n"
+                            + "@13\n"
+                            + "A=M\n"
+                            + "M=D\n";
+                }
+                return "@THAT\n"
+                        + "D=A\n"
+
+                        + "@R13\n"
+                        + "M=D\n"
+                        + "@SP\n"
+                        + "AM=M-1\n"
+                        + "D=M\n"
+                        + "@13\n"
+                        + "A=M\n"
+                        + "M=D\n";
             case "temp":
-                break;
+                return "@R5\n"
+                        + "D=A\n"
+                        + "@" + parts[2].trim()+"\n"
+                        + "D=D+A\n"
+                        + "@R13\n"
+                        + "M=D\n"
+                        + "@SP\n"
+                        + "AM=M-1\n"
+                        + "D=M\n"
+                        + "@13\n"
+                        + "A=M\n"
+                        + "M=D\n";
+                        
             default:
                 break;         
         }
@@ -237,7 +384,7 @@ public class VMS {
             if(original.get(i).contains("//")) {
                 String[] parts = original.get(i).split("/");
                 if ( !"".equals(parts[0]))
-                MainList.add(parts[0]);}
+                MainList.add(Translator(parts[0]));}
             else{
                 MainList.add(Translator(original.get(i)));}
         }  
