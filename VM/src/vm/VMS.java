@@ -204,7 +204,7 @@ public class VMS {
                         + "@SP\n" 
                         + "M=M+1\n";
             case "static":
-                return "@" + tp + "." + parts[2].trim()+"\n"
+                return "@" + tp + parts[2].trim()+"\n"
                         + "D=M\n"
                         + "@SP\n" 
                         + "A=M\n" 
@@ -311,7 +311,7 @@ public class VMS {
                         + "A=M\n"
                         + "M=D\n";
             case "static":
-                return  "@" + tp + "." + parts[2].trim()+"\n"
+                return  "@" + tp + parts[2].trim()+"\n"
                         + "@R13\n"
                         + "M=D\n"
                         + "@SP\n"
