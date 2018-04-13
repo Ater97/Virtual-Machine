@@ -183,8 +183,8 @@ public class VMS {
             case "argument": //Push the value of segment[index] onto the stack.
                 return "@ARG\n"
                         + "D=M\n"
-                        + "@" + parts[2].trim()
-                        + "\nA=D+A\n"
+                        + "@" + parts[2].trim() +"\n"
+                        + "A=D+A\n"
                         + "D=M\n"
                         
                         + "@SP\n" 
@@ -195,8 +195,8 @@ public class VMS {
             case "local":
                 return "@LCL\n"
                         + "D=M\n"
-                        + "@" + parts[2].trim()
-                        + "\nA=D+A\n"
+                        + "@" + parts[2].trim() + "\n"
+                        + "A=D+A\n"
                         + "D=M\n"
                         + "@SP\n" 
                         + "A=M\n" 
@@ -204,7 +204,7 @@ public class VMS {
                         + "@SP\n" 
                         + "M=M+1\n";
             case "static":
-                return "@" + tp + parts[2].trim()+"\n"
+                return "@" + tp +"." + parts[2].trim()+"\n"
                         + "D=M\n"
                         + "@SP\n" 
                         + "A=M\n" 
@@ -212,8 +212,8 @@ public class VMS {
                         + "@SP\n" 
                         + "M=M+1\n";
             case "constant":
-                return "@" + parts[2].trim()
-                        + "\nD=A\n"
+                return "@" + parts[2].trim() + "\n"
+                        + "D=A\n"
                         + "@SP\n" 
                         + "A=M\n" 
                         + "M=D\n" 
@@ -243,7 +243,7 @@ public class VMS {
                         + "@SP\n" 
                         + "M=M+1\n";
             case "pointer":
-                if("0"==parts[2].trim())
+                if(parts[2].trim().equals("0"))
                 {
                     return "@THIS\n"
                             + "D=M\n"
@@ -311,7 +311,7 @@ public class VMS {
                         + "A=M\n"
                         + "M=D\n";
             case "static":
-                return  "@" + tp + parts[2].trim()+"\n"
+                return  "@" + tp +"."+ parts[2].trim()+"\n"
                         + "@R13\n"
                         + "M=D\n"
                         + "@SP\n"
@@ -351,7 +351,7 @@ public class VMS {
                         + "M=D\n";
                         
             case "pointer":
-                if("0"==parts[2].trim())
+                if(parts[2].trim().equals("0"))
                 {
                     return "@THIS\n"
                             + "D=A\n"
