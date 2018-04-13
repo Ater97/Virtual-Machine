@@ -22,9 +22,11 @@ public class VMS {
     Utilities U = new Utilities();
     ArrayList<String> MainList = new ArrayList<>();
     int operationLabel = 0;
+    String tp ="";
     public void Read(File originalFile) throws IOException
     {
         try (Scanner scanner = new Scanner(originalFile)) {
+            tp = originalFile.getName().replaceAll(".vm", "");
             String str = null;
             while (scanner.hasNext())
             {
@@ -132,13 +134,13 @@ public class VMS {
                         + "AM=M-1\n" 
                         + "D=M\n" 
                         + "A=A-1\n"
-                        + "M=M&D\n";
+                        + "M=D&M\n";
             case "or":
                 return "@SP\n"
                         + "AM=M-1\n" 
                         + "D=M\n" 
                         + "A=A-1\n"
-                        + "M=M|D\n";
+                        + "M=D|M\n";
             case "not":
                 return "@SP\n"
                         + "A=M-1\n" 
@@ -185,24 +187,30 @@ public class VMS {
                         + "\nA=D+A\n"
                         + "D=M\n"
                         
-                        + "@SP\n"
-                        + "A=M\n"
-                        + "M=D\n"
-                        + "@SP\n"
-                        + "M=M+1"; 
+                        + "@SP\n" 
+                        + "A=M\n" 
+                        + "M=D\n" 
+                        + "@SP\n" 
+                        + "M=M+1\n"; 
             case "local":
                 return "@LCL\n"
                         + "D=M\n"
                         + "@" + parts[2].trim()
                         + "\nA=D+A\n"
                         + "D=M\n"
-                        + "@SP\n"
-                        + "A=M\n"
-                        + "M=D\n"
-                        + "@SP\n"
+                        + "@SP\n" 
+                        + "A=M\n" 
+                        + "M=D\n" 
+                        + "@SP\n" 
                         + "M=M+1\n";
             case "static":
-                return "@"+"\n";
+                return "@" + tp + "." + parts[2].trim()+"\n"
+                        + "D=M\n"
+                        + "@SP\n" 
+                        + "A=M\n" 
+                        + "M=D\n" 
+                        + "@SP\n" 
+                        + "M=M+1\n";
             case "constant":
                 return "@" + parts[2].trim()
                         + "\nD=A\n"
@@ -215,54 +223,56 @@ public class VMS {
             case "this":
                 return "@THIS\n"
                         + "D=M\n"
-                        + "@" + parts[2].trim()
-                        + "\nA=D+A\n"
+                        + "@" + parts[2].trim() +"\n"
+                        + "A=D+A\n"
                         + "D=M\n"
-                        + "@SP\n"
-                        + "A=M\n"
-                        + "M=D\n"
-                        + "@SP\n"
+                        + "@SP\n" 
+                        + "A=M\n" 
+                        + "M=D\n" 
+                        + "@SP\n" 
                         + "M=M+1\n";
             case "that":
                 return "@THAT\n"
                         + "D=M\n"
-                        + "@" + parts[2].trim()
-                        + "\nA=D+A\n"
+                        + "@" + parts[2].trim()  +"\n"
+                        + "A=D+A\n"
                         + "D=M\n"
-                        + "@SP\n"
-                        + "A=M\n"
-                        + "M=D\n"
-                        + "@SP\n"
+                        + "@SP\n" 
+                        + "A=M\n" 
+                        + "M=D\n" 
+                        + "@SP\n" 
                         + "M=M+1\n";
             case "pointer":
                 if("0"==parts[2].trim())
                 {
                     return "@THIS\n"
                             + "D=M\n"
-                            + "@SP\n"
-                            + "A=M\n"
-                            + "M=D\n"
-                            + "@SP\n"
-                            + "M=M+1";
+                            + "@SP\n" 
+                            + "A=M\n" 
+                            + "M=D\n" 
+                            + "@SP\n" 
+                            + "M=M+1\n";
                 }
                 return "@THAT\n"
                         + "D=M\n"
+                        
                         + "@SP\n"
                         + "A=M\n"
                         + "M=D\n"
                         + "@SP\n"
-                        + "M=M+1";
+                        + "M=M+1\n";
             case "temp":
                 return "@R5\n"
                         + "D=A\n"
                         + "@" + parts[2].trim() +"\n"
                         + "A=D+A\n"
                         + "D=M\n"
-                        + "@SP\n"
-                        + "A=M\n"
-                        + "M=D\n"
-                        + "@SP\n"
-                        + "M=M+1";
+                        
+                        + "@SP\n" 
+                        + "A=M\n" 
+                        + "M=D\n" 
+                        + "@SP\n" 
+                        + "M=M+1\n";
             default:
                 break;
         }
@@ -301,7 +311,15 @@ public class VMS {
                         + "A=M\n"
                         + "M=D\n";
             case "static":
-                break;
+                return  "@" + tp + "." + parts[2].trim()+"\n"
+                        + "@R13\n"
+                        + "M=D\n"
+                        + "@SP\n"
+                        + "AM=M-1\n"
+                        + "D=M\n"
+                        + "@13\n"
+                        + "A=M\n"
+                        + "M=D\n";
             case "constant":
                 break;
             case "this":
