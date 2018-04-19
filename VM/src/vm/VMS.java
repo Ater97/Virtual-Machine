@@ -36,16 +36,7 @@ public class VMS {
             }
         }
         firstscan(MainList);//delete comments & blank space
-        //SecondScan(MainList);
         createASM(originalFile.getName(),originalFile.getPath());
-    }
-    
-    public void SecondScan(ArrayList<String> original)
-    {   MainList = new ArrayList<>();
-        for (int i = 0; i < original.size(); i++) {
-            MainList.add(Translator(original.get(i)));
-            
-        }
     }
     
     public String Translator(String originalLine)
@@ -160,21 +151,95 @@ public class VMS {
             case "pop":
                 return PopMemorySegments(originalLine);
             //Program flow commands -> function, call, return
-            case "function":
-                break;
-            case "call":
-                break;
+            case "function":// f n Here starts the code of a function named f that has n local variables
+                return "";
+            case "call"://f m Call function f, stating that m arguments have already been pushed onto the stack by the caller
+                operationLabel++;
+                return 
+                    // SP -> R13
+                    "@SP\n" +
+                    "D=M\n" +
+                    "@R13\n" +
+                    "M=D\n" +
+                    // @RET -> *SP
+                    "@RET." + operationLabel + "\n" +
+                    "D=A\n" +
+                    "@SP\n" +
+                    "A=M\n" +
+                    "M=D\n" +
+                    
+                    "@SP\n" +
+                    "M=M+1\n" +
+                    // LCL to *SP
+                    "@LCL\n" +
+                    "D=M\n" +
+                    "@SP\n" +
+                    "A=M\n" +
+                    "M=D\n" +
+                    
+                    "@SP\n" +
+                    "M=M+1\n" +
+                    // ARG to *SP
+                    "@ARG\n" +
+                    "D=M\n" +
+                    "@SP\n" +
+                    "A=M\n" +
+                    "M=D\n" +
+                    // SP++
+                    "@SP\n" +
+                    "M=M+1\n" +
+                    // THIS to *SP
+                    "@THIS\n" +
+                    "D=M\n" +
+                    "@SP\n" +
+                    "A=M\n" +
+                    "M=D\n" +
+                    
+                    "@SP\n" +
+                    "M=M+1\n" +
+                    // THAT to *SP
+                    "@THAT\n" +
+                    "D=M\n" +
+                    "@SP\n" +
+                    "A=M\n" +
+                    "M=D\n" +
+                    
+                    "@SP\n" +
+                    "M=M+1\n" +
+                    
+                    "@R13\n" +
+                    "D=M\n" +
+                    "@" + parts[2] + "\n" +
+                    "D=D-A\n" +
+                    "@ARG\n" +
+                    "M=D\n" +
+                    // SP to LCL
+                    "@SP\n" +
+                    "D=M\n" +
+                    "@LCL\n" +
+                    "M=D\n" +
+                    "@" + parts[1] + "\n" +
+                    "0;JMP\n" +
+              "(RET." + operationLabel + ")\n";
+                
+            case "return": // Return to the calling function.
+                return "\n";
+                
             //Additionals commands -> label, goto, if-goto
-            case "label":
-                break;
-            case "goto":
-                break;
-            case "if-goto":
-                break;  
-            case "return":
-                break;
+            case "label": // labels the current location in the function’s code. 
+                return "\n";
+                
+            case "goto"://effects an unconditional goto operation, causing execution to continue from
+                //the location marked by the label. The jump destination must be located in the same function. 
+                return "\n";
+                
+            case "if-goto"://The stack’s topmost value is popped; if the value is not zero, execution continues
+                //from the location marked by the label; otherwise, execution continues from the next command in 
+                //the program. The jump destination must be located in the same function.
+                return "\n";
+            default:
+                 return "";
         }
-        return "";
     }
     public String PushMemorySegments(String originalLine)
     {   String[] parts = originalLine.split(" ");
