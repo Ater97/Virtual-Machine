@@ -227,16 +227,21 @@ public class VMS {
                 
             //Additionals commands -> label, goto, if-goto
             case "label": // labels the current location in the function’s code. 
-                return "\n";
+                return "("+parts[1]+")\n";
                 
             case "goto"://effects an unconditional goto operation, causing execution to continue from
                 //the location marked by the label. The jump destination must be located in the same function. 
-                return "\n";
+                return "@" +  parts[1] + "\n" +
+                        "0;JMP\n";
                 
             case "if-goto"://The stack’s topmost value is popped; if the value is not zero, execution continues
                 //from the location marked by the label; otherwise, execution continues from the next command in 
                 //the program. The jump destination must be located in the same function.
-                return "\n";
+                return "@SP\n"
+                        + "AM=M-1\n" 
+                        + "D=M\n" 
+                        + "@" +  parts[1] + "\n" 
+                        + "D;JNE\n";
             default:
                  return "";
         }
