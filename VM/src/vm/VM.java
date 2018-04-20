@@ -31,15 +31,20 @@ public class VM {
             JFrame parentFrame = new JFrame();
             FileNameExtensionFilter filter = new FileNameExtensionFilter("Assembler Files", "vm");
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Specify a file");   
+            fileChooser.setDialogTitle("Specify a folder");   
             fileChooser.setFileFilter(filter);
             int userSelection = fileChooser.showSaveDialog(parentFrame);
 
             if (userSelection == JFileChooser.APPROVE_OPTION) {
-                fileParse = fileChooser.getSelectedFile();
-                System.out.println("Save as file: " + fileParse.getAbsolutePath());}
-            vms.Read(fileParse);
-            flag = U.stay();
+                fileParse = fileChooser.getSelectedFile();}
+            
+            
+            try {
+                vms.Read(fileParse);
+                flag = U.stay();
+            } catch (Exception e) {
+                flag = false;
+            } 
         }
         System.exit(0);
     }
