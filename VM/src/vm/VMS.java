@@ -30,6 +30,7 @@ public class VMS {
     
     public void Read(File originalFile) throws IOException
     {
+        MainList = new ArrayList<>();
         try (Scanner scanner = new Scanner(originalFile)) {
             tp = originalFile.getName().replaceAll(".vm", "");
             String str = null;
@@ -532,7 +533,7 @@ public class VMS {
         for (int i = 0; i < original.size(); i++) {
             if(original.get(i).contains("//")) {
                 String[] parts = original.get(i).split("/");
-                if ( !"".equals(parts[0]))
+                if (parts.length!=0&&!"".equals(parts[0]))
                 MainList.add(Translator(parts[0]));}
             else{
                 MainList.add(Translator(original.get(i)));}
@@ -580,7 +581,9 @@ public class VMS {
         if(fileList.size()<2)
         {
             Read(fileList.get(0));
-            createASM(fileList.get(0).getName(),fileList.get(0).getPath());
+            filePath = fileList.get(0).getPath();
+            filePath = filePath.replace("\\"+fileList.get(0).getName(), "");
+            createASM(fileList.get(0).getParentFile().getName(),filePath);
             System.out.println("one file");
         }
         else
