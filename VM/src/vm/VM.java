@@ -59,7 +59,6 @@ public class VM {
               System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
             } else {
               System.out.println("No Selection ");
-              flag = false;
             }
             try {
                 fileParse = chooser.getSelectedFile();
@@ -70,7 +69,7 @@ public class VM {
                 vms.MergeFiles(files);
                 flag = U.stay();
             } catch (Exception e) {
-                flag = false;
+                flag = U.stay();
             }
         }
         System.exit(0);

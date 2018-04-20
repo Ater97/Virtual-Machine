@@ -544,7 +544,7 @@ public class VMS {
         path = path.replace(filename, "");
         filename = filename.replace(".vm", "");  
         
-        File fout = new File(path,filename+".asm");
+        File fout = new File(path +filename +"\\",filename+".asm");
 	FileOutputStream fos = new FileOutputStream(fout);
  
         try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos))) {
@@ -564,7 +564,6 @@ public class VMS {
         {
             for (int i = 0; i < MainList.size(); i++) {
                 out.println(MainList.get(i));
-                out.println("\n");
             }
         } catch (IOException e) {
             //exception handling left as an exercise for the reader
