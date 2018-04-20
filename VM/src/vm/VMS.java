@@ -23,6 +23,7 @@ public class VMS {
     ArrayList<String> MainList = new ArrayList<>();
     int operationLabel = 0;
     String tp ="";
+    String FunctionName ="";
     public void Read(File originalFile) throws IOException
     {
         try (Scanner scanner = new Scanner(originalFile)) {
@@ -152,86 +153,142 @@ public class VMS {
                 return PopMemorySegments(originalLine);
             //Program flow commands -> function, call, return
             case "function":// f n Here starts the code of a function named f that has n local variables
-                return "";
+                FunctionName = parts[1];
+                String result = "(" + FunctionName + ")\n"
+                        + "@SP\n"
+                        + "A=M\n";
+                for (int i = 0; i < Integer.parseInt(parts[2]) ; i++) {
+                    result += "M=0\n"
+                            + "A=A+1\n";
+                }
+                return result + "D=A\n"
+                        + "@SP\n"
+                        + "M=D\n";
+                
             case "call"://f m Call function f, stating that m arguments have already been pushed onto the stack by the caller
                 operationLabel++;
-                return 
-                    // SP -> R13
-                    "@SP\n" +
-                    "D=M\n" +
-                    "@R13\n" +
-                    "M=D\n" +
-                    // @RET -> *SP
-                    "@RET." + operationLabel + "\n" +
-                    "D=A\n" +
-                    "@SP\n" +
-                    "A=M\n" +
-                    "M=D\n" +
-                    
-                    "@SP\n" +
-                    "M=M+1\n" +
-                    // LCL to *SP
-                    "@LCL\n" +
-                    "D=M\n" +
-                    "@SP\n" +
-                    "A=M\n" +
-                    "M=D\n" +
-                    
-                    "@SP\n" +
-                    "M=M+1\n" +
-                    // ARG to *SP
-                    "@ARG\n" +
-                    "D=M\n" +
-                    "@SP\n" +
-                    "A=M\n" +
-                    "M=D\n" +
-                    // SP++
-                    "@SP\n" +
-                    "M=M+1\n" +
-                    // THIS to *SP
-                    "@THIS\n" +
-                    "D=M\n" +
-                    "@SP\n" +
-                    "A=M\n" +
-                    "M=D\n" +
-                    
-                    "@SP\n" +
-                    "M=M+1\n" +
-                    // THAT to *SP
-                    "@THAT\n" +
-                    "D=M\n" +
-                    "@SP\n" +
-                    "A=M\n" +
-                    "M=D\n" +
-                    
-                    "@SP\n" +
-                    "M=M+1\n" +
-                    
-                    "@R13\n" +
-                    "D=M\n" +
-                    "@" + parts[2] + "\n" +
-                    "D=D-A\n" +
-                    "@ARG\n" +
-                    "M=D\n" +
-                    // SP to LCL
-                    "@SP\n" +
-                    "D=M\n" +
-                    "@LCL\n" +
-                    "M=D\n" +
-                    "@" + parts[1] + "\n" +
-                    "0;JMP\n" +
-              "(RET." + operationLabel + ")\n";
+                return // SP -> R13
+                        "@SP\n"
+                        + "D=M\n" 
+                        + "@R13\n" 
+                        + "M=D\n" 
+                        // @RET -> *SP
+                        + "@RET." + operationLabel + "\n" 
+                        + "D=A\n" 
+                        + "@SP\n" 
+                        + "A=M\n" 
+                        + "M=D\n" 
+
+                        + "@SP\n" 
+                        + "M=M+1\n" 
+                        // LCL to *SP
+                        + "@LCL\n" 
+                        + "D=M\n" 
+                        + "@SP\n"
+                        + "A=M\n" 
+                        + "M=D\n" 
+
+                        + "@SP\n" 
+                        + "M=M+1\n" 
+                        // ARG to *SP
+                        + "@ARG\n" 
+                        + "D=M\n" 
+                        + "@SP\n" 
+                        + "A=M\n" 
+                        + "M=D\n" 
+
+                        + "@SP\n" 
+                        + "M=M+1\n" 
+                        // THIS to *SP
+                        + "@THIS\n" 
+                        + "D=M\n" 
+                        + "@SP\n" 
+                        + "A=M\n" 
+                        + "M=D\n" 
+
+                        + "@SP\n" 
+                        + "M=M+1\n" 
+                        // THAT to *SP
+                        + "@THAT\n" 
+                        + "D=M\n" 
+                        + "@SP\n" 
+                        + "A=M\n" 
+                        + "M=D\n" 
+
+                        + "@SP\n" 
+                        + "M=M+1\n" 
+
+                        + "@R13\n" 
+                        + "D=M\n" 
+                        + "@" + parts[2] + "\n" 
+                        + "D=D-A\n" 
+                        + "@ARG\n" 
+                        + "M=D\n" 
+                        // SP to LCL
+                        + "@SP\n" 
+                        + "D=M\n" 
+                        + "@LCL\n" 
+                        + "M=D\n" 
+                        + "@" + parts[1] + "\n" 
+                        + "0;JMP\n" 
+                        + "(RET." + operationLabel + ")\n";
                 
             case "return": // Return to the calling function.
-                return "\n";
+                return // *(LCL - 5) to R13
+                        "@LCL\n" 
+                        + "D=M\n" 
+                        + "@5\n" 
+                        + "A=D-A\n" 
+                        + "D=M\n" 
+                        + "@R13\n" 
+                        + "M=D\n" 
+                        // *(SP - 1) to *ARG
+                        + "@SP\n" 
+                        + "A=M-1\n" 
+                        + "D=M\n" 
+                        + "@ARG\n" 
+                        + "A=M\n" 
+                        + "M=D \n" 
+                        // ARG + 1 to SP
+                        + "D=A+1\n" 
+                        + "@SP\n" 
+                        + "M=D\n" 
+                        // *(LCL - 1) to THAT
+                        + "@LCL\n" 
+                        + "AM=M-1\n" 
+                        + "D=M\n" 
+                        + "@THAT\n" 
+                        + "M=D\n" 
+                        // *(LCL - 1) to THIS
+                        + "@LCL\n" 
+                        + "AM=M-1\n" 
+                        + "D=M\n" 
+                        + "@THIS\n" 
+                        + "M=D\n" 
+                        // *(LCL - 1) to ARG
+                        + "@LCL\n" 
+                        + "AM=M-1\n" 
+                        + "D=M\n" 
+                        + "@ARG\n" 
+                        + "M=D\n" 
+                        // *(LCL - 1) to LCL
+                        + "@LCL\n" 
+                        + "A=M-1\n" 
+                        + "D=M\n" 
+                        + "@LCL\n" 
+                        + "M=D\n" 
+                        // R13 to A
+                        + "@R13\n" 
+                        + "A=M\n" 
+                        + "0;JMP\n";
                 
             //Additionals commands -> label, goto, if-goto
             case "label": // labels the current location in the function’s code. 
-                return "("+parts[1]+")\n";
+                return "(" + FunctionName + "$"  + parts[1] + ")\n";
                 
             case "goto"://effects an unconditional goto operation, causing execution to continue from
                 //the location marked by the label. The jump destination must be located in the same function. 
-                return "@" +  parts[1] + "\n" +
+                return "@" + FunctionName + "$" +  parts[1] + "\n" +
                         "0;JMP\n";
                 
             case "if-goto"://The stack’s topmost value is popped; if the value is not zero, execution continues
@@ -240,7 +297,7 @@ public class VMS {
                 return "@SP\n"
                         + "AM=M-1\n" 
                         + "D=M\n" 
-                        + "@" +  parts[1] + "\n" 
+                        + "@" + FunctionName + "$" + parts[1] + "\n" 
                         + "D;JNE\n";
             default:
                  return "";
@@ -492,5 +549,10 @@ public class VMS {
                 bw.newLine();
             }
         }
+    }
+    
+    public void MergeFiles(ArrayList<String> fileNames)
+    {
+        
     }
 }
