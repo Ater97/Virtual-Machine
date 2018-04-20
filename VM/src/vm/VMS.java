@@ -159,7 +159,8 @@ public class VMS {
             //Program flow commands -> function, call, return
             case "function":// f n Here starts the code of a function named f that has n local variables
                 FunctionName = parts[1];
-                String result = "(" + FunctionName + ")\n"
+                String result = "(" + FunctionName + ")\n";
+               /* String result = "(" + FunctionName + ")\n"
                         + "@SP\n"
                         + "A=M\n";
                 for (int i = 0; i < Integer.parseInt(parts[2]) ; i++) {
@@ -168,7 +169,17 @@ public class VMS {
                 }
                 return result + "D=A\n"
                         + "@SP\n"
-                        + "M=D\n";
+                        + "M=D\n";*/
+                for (int i = 0; i < Integer.parseInt(parts[2]); i++) {
+                    result += "@0\n"
+                            + "D=A\n"
+                            + "@SP\n"
+                            + "A=M\n"
+                            + "M=D\n"
+                            + "@SP\n"
+                            + "M=M+1\n";
+                }
+                return result;
                 
             case "call"://f m Call function f, stating that m arguments have already been pushed onto the stack by the caller
                 operationLabel++;
@@ -305,7 +316,7 @@ public class VMS {
                         + "@" + FunctionName + "$" + parts[1] + "\n" 
                         + "D;JNE\n";
             default:
-                 return "";
+                 return "FUCK something go wrong";
         }
     }
     public String PushMemorySegments(String originalLine)
@@ -518,7 +529,7 @@ public class VMS {
                         + "@SP\n"
                         + "AM=M-1\n"
                         + "D=M\n"
-                        + "@13\n"
+                        + "@R13\n"
                         + "A=M\n"
                         + "M=D\n";
                         
@@ -658,7 +669,6 @@ public class VMS {
     public void MergeFiles(List<File> fileList) throws IOException
     {
         String folderName ="";
-        String folderPath ="";
         String filePath ="";
         
         if(fileList.size()<2)
@@ -681,8 +691,8 @@ public class VMS {
                     
                     System.out.println("same folder ");
                     System.out.println("file: " + file.getName());
-                    System.out.println(file.getParentFile().getName());
-                    System.out.println("file: " + folderName + "\n");
+                    System.out.println("folder name: "+file.getParentFile().getName());
+                    System.out.println("file var folder name : " + folderName + "\n");
                 }
                 else
                 {   
@@ -693,7 +703,6 @@ public class VMS {
                 }
                 
                 folderName = file.getParentFile().getName();
-                folderPath = file.getPath();
             }
         }
     }
