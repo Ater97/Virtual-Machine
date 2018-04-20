@@ -7,10 +7,12 @@ package vm;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.commons.io.FileUtils;
 /**
  *
  * @author sebas
@@ -27,6 +29,7 @@ public class VM {
         while(flag)
         {
             VMS vms = new VMS();
+            /*
             File fileParse = null;
             JFrame parentFrame = new JFrame();
             FileNameExtensionFilter filter = new FileNameExtensionFilter("Assembler Files", "vm");
@@ -34,17 +37,41 @@ public class VM {
             fileChooser.setDialogTitle("Specify a folder");   
             fileChooser.setFileFilter(filter);
             int userSelection = fileChooser.showSaveDialog(parentFrame);
-
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 fileParse = fileChooser.getSelectedFile();}
-            
-            
             try {
                 vms.Read(fileParse);
                 flag = U.stay();
             } catch (Exception e) {
                 flag = false;
             } 
+            */
+            
+            File fileParse = null;
+            JFileChooser chooser = new JFileChooser();
+            //chooser.setCurrentDirectory(new java.io.File("."));
+            chooser.setDialogTitle("Virtual Machine");
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            chooser.setAcceptAllFileFilterUsed(false);
+
+            if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+              System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
+              System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
+            } else {
+              System.out.println("No Selection ");
+              flag = false;
+            }
+            try {
+                fileParse = chooser.getSelectedFile();
+                String[] extensions = new String[] { "vm" };
+                List<File> files = (List<File>) FileUtils.listFiles(fileParse, extensions, true);
+
+
+                vms.MergeFiles(files);
+                flag = U.stay();
+            } catch (Exception e) {
+                flag = false;
+            }
         }
         System.exit(0);
     }

@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -24,6 +25,7 @@ public class VMS {
     int operationLabel = 0;
     String tp ="";
     String FunctionName ="";
+    
     public void Read(File originalFile) throws IOException
     {
         try (Scanner scanner = new Scanner(originalFile)) {
@@ -37,7 +39,7 @@ public class VMS {
             }
         }
         firstscan(MainList);//delete comments & blank space
-        createASM(originalFile.getName(),originalFile.getPath());
+        //createASM(originalFile.getName(),originalFile.getPath());
     }
     
     public String Translator(String originalLine)
@@ -549,10 +551,57 @@ public class VMS {
                 bw.newLine();
             }
         }
+        MainList = new ArrayList<>();
     }
     
-    public void MergeFiles(ArrayList<String> fileNames)
+    public void MergeFiles(List<File> fileList) throws IOException
     {
+        String folderName ="";
+        String folderPath ="";
+        boolean flag = false;
+        
+        if(fileList.size()<2)
+        {
+            Read(fileList.get(0));
+            createASM(fileList.get(0).getName(),fileList.get(0).getPath());
+            System.out.println("one file");
+        }
+        else
+        {
+            for (File file : fileList){
+                if(file.getParentFile().getName().equals(folderName))
+                {
+                    Read(file);
+                }
+                else
+                {
+                    createASM(file.getName(),file.getPath());
+                    Read(file);
+                    
+                }
+                
+                folderName = file.getParentFile().getName();
+                folderPath = file.getPath();
+            }
+        }
+            
+        for (File file : fileList) {
+            if(file.getParentFile().getName().equals(folderName))
+            {
+                System.out.println("same folder ");
+                System.out.println("file: " + file.getName());
+                System.out.println(file.getParentFile().getName());
+                System.out.println("file: " + folderName + "\n");
+            }
+            else
+            {
+                Read(file);
+                createASM(file.getName(),file.getPath());
+            }
+            folderName = file.getParentFile().getName();
+            System.out.println("file: " + file.getCanonicalPath());
+            System.out.println("file: " + file.getName());
+        }
         
     }
 }
