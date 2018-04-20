@@ -534,9 +534,9 @@ public class VMS {
             if(original.get(i).contains("//")) {
                 String[] parts = original.get(i).split("/");
                 if (parts.length!=0&&!"".equals(parts[0]))
-                MainList.add(Translator(parts[0]));}
+                MainList.add(Translator(parts[0]).trim());}
             else{
-                MainList.add(Translator(original.get(i)));}
+                MainList.add(Translator(original.get(i)).trim());}
         }  
     }
     public boolean flaginit = false;
@@ -651,8 +651,8 @@ public class VMS {
                 + "@Sys.init\n" 
 
                 + "0;JMP\n" 
-                + "(RET." + operationLabel + ")\n" +
-                 "0;JMP\n";
+                + "(RET." + operationLabel + ")\n"
+                + "0;JMP\n";
     }
     
     public void MergeFiles(List<File> fileList) throws IOException
