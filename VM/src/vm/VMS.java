@@ -419,7 +419,7 @@ public class VMS {
             default:
                 break;
         }
-        return "";
+        return "FUCK something go wrong";
     }
     public String PopMemorySegments(String originalLine)
     {   String[] parts = originalLine.split(" ");
@@ -435,7 +435,7 @@ public class VMS {
                         + "@SP\n"
                         + "AM=M-1\n"
                         + "D=M\n"
-                        + "@13\n"
+                        + "@R13\n"
                         + "A=M\n"
                         + "M=D\n";
                         
@@ -450,11 +450,11 @@ public class VMS {
                         + "@SP\n"
                         + "AM=M-1\n"
                         + "D=M\n"
-                        + "@13\n"
+                        + "@R13\n"
                         + "A=M\n"
                         + "M=D\n";
             case "static":
-                return  "@" + tp +"."+ parts[2].trim()+"\n"
+                return  /*"@" + tp +"."+ parts[2].trim()+"\n"
                         + "@R13\n"
                         + "M=D\n"
                         + "@SP\n"
@@ -462,7 +462,12 @@ public class VMS {
                         + "D=M\n"
                         + "@R13\n"
                         + "A=M\n"
-                        + "M=D\n";
+                        + "M=D\n";*/
+                        "@SP\n"
+                        + "AM=M-1\n"
+                        + "D=M\n"
+                        + "@" + tp +"."+ parts[2].trim()+"\n"
+                        + "M=D";
             case "constant":
                 break;
             case "this":
@@ -475,7 +480,7 @@ public class VMS {
                         + "@SP\n"
                         + "AM=M-1\n"
                         + "D=M\n"
-                        + "@13\n"
+                        + "@R13\n"
                         + "A=M\n"
                         + "M=D\n";
                         
@@ -489,7 +494,7 @@ public class VMS {
                         + "@SP\n"
                         + "AM=M-1\n"
                         + "D=M\n"
-                        + "@13\n"
+                        + "@R13\n"
                         + "A=M\n"
                         + "M=D\n";
                         
@@ -504,7 +509,7 @@ public class VMS {
                             + "@SP\n"
                             + "AM=M-1\n"
                             + "D=M\n"
-                            + "@13\n"
+                            + "@R13\n"
                             + "A=M\n"
                             + "M=D\n";
                 }
@@ -516,7 +521,7 @@ public class VMS {
                         + "@SP\n"
                         + "AM=M-1\n"
                         + "D=M\n"
-                        + "@13\n"
+                        + "@R13\n"
                         + "A=M\n"
                         + "M=D\n";
             case "temp":
@@ -536,7 +541,7 @@ public class VMS {
             default:
                 break;         
         }
-        return "";
+        return "FUCK something go wrong";
     }
     
     public void firstscan(ArrayList<String> original){ //delete comments & blank space
