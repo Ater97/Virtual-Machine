@@ -47,7 +47,7 @@ public class VMS {
     
     public String Translator(String originalLine)
     {   //Memory Access Commands -> add, sub, neg,eq, gt, lt, and, or , not 
-        switch(originalLine) 
+        switch(originalLine.trim()) 
         {
             case "add":
                 return "@SP\n"
@@ -539,7 +539,7 @@ public class VMS {
                 MainList.add(Translator(original.get(i)));}
         }  
     }
-    
+    public boolean flaginit = false;
     public void createASM(String filename, String path) throws IOException
     {
         path = path.replace(filename, "");
@@ -549,10 +549,14 @@ public class VMS {
 	FileOutputStream fos = new FileOutputStream(fout);
  
         try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos))) {
+            if(flaginit)
+            {
+                bw.write(addInit());
+            }
+            
             for (int i = 0; i < MainList.size(); i++) {
                 bw.write(MainList.get(i));
-                bw.newLine();
-                
+                bw.newLine();      
             }
         }
         MainList = new ArrayList<>();
@@ -571,12 +575,91 @@ public class VMS {
         }
     }
     
+    public String addInit()
+    {
+        operationLabel++;
+        return
+                "@256\n"+
+                "D=A\n" +
+                "@SP\n" +
+                "M=D\n" +
+                
+                "@SP\n"
+                + "D=M\n" 
+                + "@R13\n" 
+                + "M=D\n" 
+                // @RET -> *SP
+                + "@RET." + operationLabel + "\n" 
+                + "D=A\n" 
+                + "@SP\n" 
+                + "A=M\n" 
+                + "M=D\n" 
+
+                + "@SP\n" 
+                + "M=M+1\n" 
+                // LCL to *SP
+                + "@LCL\n" 
+                + "D=M\n" 
+                + "@SP\n"
+                + "A=M\n" 
+                + "M=D\n" 
+
+                + "@SP\n" 
+                + "M=M+1\n" 
+                // ARG to *SP
+                + "@ARG\n" 
+                + "D=M\n" 
+                + "@SP\n" 
+                + "A=M\n" 
+                + "M=D\n" 
+
+                + "@SP\n" 
+                + "M=M+1\n" 
+                // THIS to *SP
+                + "@THIS\n" 
+                + "D=M\n" 
+                + "@SP\n" 
+                + "A=M\n" 
+                + "M=D\n" 
+
+                + "@SP\n" 
+                + "M=M+1\n" 
+                // THAT to *SP
+                + "@THAT\n" 
+                + "D=M\n" 
+                + "@SP\n" 
+                + "A=M\n" 
+                + "M=D\n" 
+
+                + "@SP\n" 
+                + "M=M+1\n" 
+
+                + "@R13\n" 
+                + "D=M\n" 
+
+                + "@0\n"
+
+                + "D=D-A\n" 
+                + "@ARG\n" 
+                + "M=D\n" 
+                // SP to LCL
+                + "@SP\n" 
+                + "D=M\n" 
+                + "@LCL\n" 
+                + "M=D\n" 
+
+                + "@Sys.init\n" 
+
+                + "0;JMP\n" 
+                + "(RET." + operationLabel + ")\n" +
+                 "0;JMP\n";
+    }
+    
     public void MergeFiles(List<File> fileList) throws IOException
     {
         String folderName ="";
         String folderPath ="";
         String filePath ="";
-        boolean first = true;
         
         if(fileList.size()<2)
         {

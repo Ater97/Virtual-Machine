@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.commons.io.FileUtils;
@@ -64,6 +65,11 @@ public class VM {
                 fileParse = chooser.getSelectedFile();
                 String[] extensions = new String[] { "vm" };
                 List<File> files = (List<File>) FileUtils.listFiles(fileParse, extensions, true);
+                
+                if (JOptionPane.showConfirmDialog(null, "Do you want to add init to your files?", "WARNING",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    vms.flaginit = true;
+                }
 
 
                 vms.MergeFiles(files);
