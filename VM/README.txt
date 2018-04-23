@@ -9,4 +9,6 @@ convert another file, if you do click YES and the file dialog will
 show again. In case you are done only click NO and the program will
 close. 
 
+The .jar file is located in the dist folder.
+
 Have a nice day... :)
